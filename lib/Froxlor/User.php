@@ -71,7 +71,7 @@ class User
 	 *
 	 * @author Florian Lippert <flo@syscp.org> (2003-2009)
 	 */
-	public static function getCorrectUserSalutation($userinfo)
+	public static function getCorrectUserSalutation($userinfo): string
 	{
 		$returnval = '';
 
@@ -270,7 +270,7 @@ class User
 						if (($acustomer['diskspace'] / 1024) != -1) {
 							$admin[$field . '_new'] += $acustomer['diskspace'];
 						}
-					} else if ($field != 'traffic_used') {
+					} elseif ($field != 'traffic_used') {
 						if ($acustomer[str_replace("_used", "", $field)] != '-1') {
 							$admin[$field . '_new'] += $acustomer[str_replace("_used", "", $field)];
 						}

@@ -147,7 +147,7 @@ class FroxlorLogger
 	 * @return FroxlorLogger
 	 * @throws \Exception
 	 */
-	public static function getInstanceOf(array $userinfo = [])
+	public static function getInstanceOf(array $userinfo = []): FroxlorLogger
 	{
 		if (empty($userinfo)) {
 			$userinfo = [

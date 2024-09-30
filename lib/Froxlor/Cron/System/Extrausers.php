@@ -34,33 +34,31 @@ use PDO;
 
 class Extrausers
 {
+	public const EXTRAUSERS_FOLDER = '/var/lib/extrausers';
 
-	public static function generateFiles(&$cronlog)
+	public static function generateFiles(&$cronlog): void
 	{
-		// passwd
-		$passwd = '/var/lib/extrausers/passwd';
+		$passwdFolder = self::EXTRAUSERS_FOLDER . '/passwd';
 		$sql = "SELECT customerid,username,'x' as password,uid,gid,'Froxlor User' as comment,homedir,shell, login_enabled FROM ftp_users ORDER BY uid, LENGTH(username) ASC";
 		$users_list = [];
-		self::generateFile($passwd, $sql, $cronlog, $users_list);
+		self::generateFile($passwdFolder, $sql, $cronlog, $users_list);
 
-		// group
-		$group = '/var/lib/extrausers/group';
+		$groupFolder = self::EXTRAUSERS_FOLDER . '/group';
 		$sql = "SELECT groupname,'x' as password,gid,members FROM ftp_groups ORDER BY gid ASC";
-		self::generateFile($group, $sql, $cronlog, $users_list);
+		self::generateFile($groupFolder, $sql, $cronlog, $users_list);
 
-		// shadow
-		$shadow = '/var/lib/extrausers/shadow';
+		$shadowFolder = self::EXTRAUSERS_FOLDER . '/shadow';
 		$sql = "SELECT username,password FROM ftp_users ORDER BY gid ASC";
-		self::generateFile($shadow, $sql, $cronlog);
+		self::generateFile($shadowFolder, $sql, $cronlog);
 
 		// set correct permissions
-		@chmod('/var/lib/extrausers/', 0755);
-		@chmod('/var/lib/extrausers/passwd', 0644);
-		@chmod('/var/lib/extrausers/group', 0644);
-		@chmod('/var/lib/extrausers/shadow', 0640);
+		@chmod(self::EXTRAUSERS_FOLDER, 0755);
+		@chmod($passwdFolder, 0644);
+		@chmod($groupFolder, 0644);
+		@chmod($shadowFolder, 0640);
 	}
 
-	private static function generateFile($file, $query, &$cronlog, &$result_list = null)
+	private static function generateFile(string $file, string $query, &$cronlog, ?array &$result_list = null): void
 	{
 		$type = basename($file);
 		$cronlog->logAction(FroxlorLogger::CRON_ACTION, LOG_NOTICE, 'Creating ' . $type . ' file');
@@ -123,7 +121,7 @@ class Extrausers
 		}
 	}
 
-	private static function cleanString($string = null)
+	private static function cleanString(string $string): string
 	{
 		$allowed = "/[^a-z0-9\\.\\-\\_\\ ]/i";
 		return preg_replace($allowed, "", $string);
